@@ -51,6 +51,7 @@ namespace Northwind.WebUI
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddSeq();
                     logging.AddConsole();
                     logging.AddDebug();
                 })

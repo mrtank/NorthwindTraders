@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Northwind.Application.Products.Queries.GetProduct
 {
-    public class GetProductQueryHandler : MediatR.IRequestHandler<GetProductQuery, ProductViewModel>
+    public class GetProductQueryHandler : IRequestHandler<GetProductQuery, ProductViewModel>
     {
         private readonly INorthwindDbContext _context;
         private readonly IMapper _mapper;

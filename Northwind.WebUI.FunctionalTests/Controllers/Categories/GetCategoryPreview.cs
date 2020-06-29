@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Northwind.Application.Categories.Models;
 using Northwind.WebUI.FunctionalTests.Common;
@@ -17,15 +16,17 @@ namespace Northwind.WebUI.FunctionalTests.Controllers.Categories
         }
 
         [Fact]
-        public async Task ReturnsIEnumerableOfCategoryPreviewDto()
+        public async Task ReturnsCategoryPreviewDto()
         {
-            var response = await _client.GetAsync("/api/categories/getcategorypreview");
+            var categoryId = 1;
+
+            var response = await _client.GetAsync($"/api/categories/getcategorypreview/{categoryId}");
 
             response.EnsureSuccessStatusCode();
 
-            var categories = await Utilities.GetResponseContent<IEnumerable<CategoryPreviewDto>>(response);
+            var category = await Utilities.GetResponseContent<CategoryPreviewDto>(response);
 
-            Assert.NotEmpty(categories);
+            Assert.Equal(categoryId, category.CategoryId);
         }
     }
 }

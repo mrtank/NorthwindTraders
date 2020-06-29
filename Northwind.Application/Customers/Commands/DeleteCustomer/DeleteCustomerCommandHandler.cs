@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using Northwind.Application.Exceptions;
 using Northwind.Application.Interfaces;
 using Northwind.Domain.Entities;
@@ -17,7 +16,7 @@ namespace Northwind.Application.Customers.Commands.DeleteCustomer
             _context = context;
         }
 
-        public async Task<Unit> Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
         {
             var entity = await _context.Customers
                 .FindAsync(request.Id);
@@ -37,8 +36,6 @@ namespace Northwind.Application.Customers.Commands.DeleteCustomer
             _context.Customers.Remove(entity);
 
             await _context.SaveChangesAsync(cancellationToken);
-
-            return Unit.Value;
         }
     }
 }

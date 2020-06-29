@@ -6,7 +6,7 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/Categories/GetCategoryPreview": {
+    "/api/Categories/GetCategoryPreview/{categoryId}": {
       "get": {
         "tags": [
           "Categories"
@@ -14,8 +14,8 @@
         "operationId": "Categories_GetCategoryPreview",
         "parameters": [
           {
-            "name": "CategoryId",
-            "in": "query",
+            "name": "categoryId",
+            "in": "path",
             "required": true,
             "schema": {
               "type": "integer",

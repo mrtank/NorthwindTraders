@@ -1,7 +1,8 @@
-﻿using MediatR;
-
+﻿
 namespace Northwind.Application.Products.Commands.UpdateProduct
 {
+    using Interfaces;
+
     public class UpdateProductCommand : IRequest
     {
         public int ProductId { get; set; }

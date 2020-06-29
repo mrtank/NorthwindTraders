@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using Northwind.Application.Interfaces;
 using Northwind.Domain.Entities;
 

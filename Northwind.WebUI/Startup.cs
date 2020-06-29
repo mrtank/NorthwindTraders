@@ -1,28 +1,29 @@
 using AutoMapper;
 using FluentValidation.AspNetCore;
-using MediatR;
-using MediatR.Pipeline;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Northwind.Application.Customers.Commands.CreateCustomer;
-using Northwind.Application.Infrastructure;
 using Northwind.Application.Infrastructure.AutoMapper;
 using Northwind.Application.Interfaces;
-using Northwind.Application.Products.Queries.GetProduct;
 using Northwind.Common;
 using Northwind.Infrastructure;
 using Northwind.Persistence;
 using Northwind.WebUI.Filters;
-using NSwag.AspNetCore;
 using System.Reflection;
 
 namespace Northwind.WebUI
 {
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+    using Application.Products.Queries.GetAllProducts;
+    using MediatR;
+    using NetCore.AutoRegisterDi;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -43,9 +44,14 @@ namespace Northwind.WebUI
             services.AddTransient<IDateTime, MachineDateTime>();
 
             // Add MediatR
-            services.AddMediatR(typeof(GetProductQueryHandler).GetTypeInfo().Assembly);
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
+            //services.AddMediatR(typeof(GetAllProductsQueryHandler).GetTypeInfo().Assembly);
+            services.AddTransient(typeof(IMediator), x => null);
+            services.RegisterAssemblyPublicNonGenericClasses(
+                    typeof(GetAllProductsQueryHandler).GetTypeInfo().Assembly)
+                .Where(c => c.Name.EndsWith("Handler"))
+                .AsPublicImplementedInterfaces();
+            //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
+            //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
 
             // Add DbContext using SQL Server Provider
             services.AddDbContext<INorthwindDbContext, NorthwindDbContext>(options =>
@@ -55,6 +61,24 @@ namespace Northwind.WebUI
                 .AddMvc(options => options.Filters.Add(typeof(CustomExceptionFilterAttribute)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateCustomerCommandValidator>());
+
+            services.AddOpenApiDocument(configure =>
+            {
+                configure.PostProcess = document =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = "My API";
+                    document.Info.Description = "ASP.NET Core Web API";
+                };
+                configure.AddOperationFilter(cont =>
+                {
+                    // Build an intermediate service provider
+                    var sp = services.BuildServiceProvider();
+
+                    // Resolve the services from the service provider
+                    return cont.Document.Schemes.Count == 0;
+                });
+            });
 
             // Customise default API behavour
             services.Configure<ApiBehaviorOptions>(options =>
@@ -87,6 +111,7 @@ namespace Northwind.WebUI
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            app.UseOpenApi();
             app.UseSwaggerUi3(settings =>
             {
                 settings.Path = "/api";

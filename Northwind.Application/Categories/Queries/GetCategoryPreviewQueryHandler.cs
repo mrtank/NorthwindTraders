@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Application.Categories.Models;
 using Northwind.Application.Interfaces;
 
 namespace Northwind.Application.Categories.Queries
 {
-    public class GetCategoryPreviewQueryHandler : IRequestHandler<GetCategoryPreviewQuery, List<CategoryPreviewDto>>
+    public class GetCategoryPreviewQueryHandler : IRequestHandler<GetCategoryPreviewQuery, CategoryPreviewDto>
     {
         private readonly INorthwindDbContext _context;
 
@@ -18,14 +17,14 @@ namespace Northwind.Application.Categories.Queries
             _context = context;
         }
 
-        public Task<List<CategoryPreviewDto>> Handle(GetCategoryPreviewQuery request, CancellationToken cancellationToken)
+        public Task<CategoryPreviewDto> Handle(GetCategoryPreviewQuery request, CancellationToken cancellationToken)
         {
             Thread.Sleep(500);
 
             // BUG: This nested projection results in N + 1
             return _context.Categories
                 .Select(CategoryPreviewDto.Projection)
-                .ToListAsync(cancellationToken);
+                .SingleAsync(x => x.CategoryId == request.CategoryId, cancellationToken);
 
             /*
             Temporary Fix - load data into memory and project in-memory.

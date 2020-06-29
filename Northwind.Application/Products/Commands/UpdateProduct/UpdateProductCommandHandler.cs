@@ -1,13 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using Northwind.Application.Exceptions;
 using Northwind.Application.Interfaces;
 using Northwind.Domain.Entities;
 
 namespace Northwind.Application.Products.Commands.UpdateProduct
 {
-    public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Unit>
+    public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand>
     {
         private readonly INorthwindDbContext _context;
 
@@ -16,7 +15,7 @@ namespace Northwind.Application.Products.Commands.UpdateProduct
             _context = context;
         }
 
-        public async Task<Unit> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
             var entity = await _context.Products.FindAsync(request.ProductId);
 
@@ -33,8 +32,6 @@ namespace Northwind.Application.Products.Commands.UpdateProduct
             entity.Discontinued = request.Discontinued;
 
             await _context.SaveChangesAsync(cancellationToken);
-
-            return Unit.Value;
         }
     }
 }

@@ -14,27 +14,32 @@ namespace Northwind.WebUI.Controllers
         [HttpGet]
         public async Task<ActionResult<ProductsListViewModel>> GetAll()
         {
-            return Ok(await Mediator.Send(new GetAllProductsQuery()));
+            return Ok(await Send<GetAllProductsQuery, ProductsListViewModel>(new GetAllProductsQuery()));
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductViewModel>> Get(int id)
         {
-            return Ok(await Mediator.Send(new GetProductQuery { Id = id }));
+            return Ok(await Send<GetProductQuery, ProductViewModel>(new GetProductQuery { Id = id }));
         }
 
         [HttpPost]
         public async Task<ActionResult<int>> Create([FromBody] CreateProductCommand command)
         {
-            var productId = await Mediator.Send(command);
+            var productId = await Send<CreateProductCommand, int>(command);
 
             return Ok(productId);
         }
 
         [HttpPut]
-        public async Task<ActionResult<ProductDto>> Update([FromBody] UpdateProductCommand command)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> Update([FromBody] UpdateProductCommand command)
         {
-            return Ok(await Mediator.Send(command));
+            await Send(command);
+
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
@@ -42,7 +47,7 @@ namespace Northwind.WebUI.Controllers
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Delete(int id)
         {
-            await Mediator.Send(new DeleteProductCommand { Id = id });
+            await Send(new DeleteProductCommand { Id = id });
 
             return NoContent();
         }

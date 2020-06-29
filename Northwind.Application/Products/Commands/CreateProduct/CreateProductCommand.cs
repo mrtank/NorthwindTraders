@@ -1,7 +1,8 @@
-﻿using MediatR;
-
+﻿
 namespace Northwind.Application.Products.Commands.CreateProduct
 {
+    using Interfaces;
+
     public class CreateProductCommand : IRequest<int>
     {
         public string ProductName { get; set; }

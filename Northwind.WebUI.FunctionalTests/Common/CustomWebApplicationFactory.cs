@@ -52,8 +52,8 @@ namespace Northwind.WebUI.FunctionalTests.Common
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, $"An error occurred seeding the " +
-                                            "database with test messages. Error: {ex.Message}");
+                        logger.LogError(ex, "An error occurred seeding the " +
+                                            $"database with test messages. Error: {ex.Message}");
                     }
                 }
             });

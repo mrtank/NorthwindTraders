@@ -15,7 +15,7 @@ namespace Northwind.WebUI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CustomersListViewModel>> GetAll()
         {
-            return Ok(await Mediator.Send(new GetCustomersListQuery()));
+            return Ok(await Send<GetCustomersListQuery, CustomersListViewModel>(new GetCustomersListQuery()));
         }
 
         [HttpGet("{id}")]
@@ -23,7 +23,7 @@ namespace Northwind.WebUI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CustomerDetailModel>> Get(string id)
         {
-            return Ok(await Mediator.Send(new GetCustomerDetailQuery { Id = id }));
+            return Ok(await Send<GetCustomerDetailQuery, CustomerDetailModel>(new GetCustomerDetailQuery { Id = id }));
         }
 
         [HttpPost]
@@ -31,7 +31,7 @@ namespace Northwind.WebUI.Controllers
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Create([FromBody]CreateCustomerCommand command)
         {
-            await Mediator.Send(command);
+            await Send(command);
 
             return NoContent();
         }
@@ -41,7 +41,7 @@ namespace Northwind.WebUI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update([FromBody]UpdateCustomerCommand command)
         {
-            await Mediator.Send(command);
+            await Send(command);
 
             return NoContent();
         }
@@ -51,7 +51,7 @@ namespace Northwind.WebUI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(string id)
         {
-            await Mediator.Send(new DeleteCustomerCommand { Id = id });
+            await Send(new DeleteCustomerCommand { Id = id });
 
             return NoContent();
         }
